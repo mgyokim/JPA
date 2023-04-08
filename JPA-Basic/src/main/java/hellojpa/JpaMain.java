@@ -18,31 +18,15 @@ public class JpaMain {
         tx.begin();
 
         try {
-//            저장
-//            Member member = new Member();
-//            member.setId(2L);
-//            member.setName("HelloB");
-//            em.persist(member);
+            // 비영속
+            Member member = new Member();
+            member.setId(100L);
+            member.setName("HelloJPA");
 
-//            저장한 것을 찾고 싶을 때
-//            Member findMember = em.find(Member.class, 1L);
-//            System.out.println("findMember.id = " + findMember.getId());
-//            System.out.println("findMember.name = " + findMember.getName());
-
-//            저장한 것을 삭제하고 싶을 때
-//            em.remove(findMember);
-
-//            저장한 것을 수정하고 싶을 때
-//            findMember.setName("HelloJPA");
-
-//            예를 들어서, 전체 회원을 조회하고 싶다면? (JPQL - 객체를 대상으로하는 객체지향 쿼리)
-            List<Member> result = em.createQuery("select m from Member as m", Member.class)
-//                    .setFirstResult(5)  // 페이징 하고싶을 때, "5번부터
-//                    .setMaxResults(8)   // 8개 가져와" 라는 뜻
-                    .getResultList();
-            for (Member member : result) {
-                System.out.println("member.name = " + member.getName());
-            }
+            // 영속
+            System.out.println("===BEFORE===");
+            em.persist(member);
+            System.out.println("===AFTER===");
 
             tx.commit();
         } catch (Exception e) {
