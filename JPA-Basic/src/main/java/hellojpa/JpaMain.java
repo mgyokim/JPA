@@ -18,12 +18,17 @@ public class JpaMain {
         tx.begin();
 
         try {
-            Member member = new Member(200L, "member200");
-            em.persist(member);
+            // 영속 상태
+            Member member = em.find(Member.class, 150L);
+            member.setName("AAAAA");
 
-            em.flush(); // 플러시를 직접 호출하면, 변경감지를 통해(쓰기 지연 SQL 저장소에 있는 SQL 쿼리들) 그 즉시 DB 반영 (1차 캐시(영속성 컨텍스트)는 그대로)
+            // 준영속(detach) 상태 commit 하면 아무일도 일어나지 않음
+//            em.detach(member);
 
-            // JPQL 실행시 플러시 자동 호출된다.
+            // 엔티티 매니저 안에 있는 영속성 컨텍스트를 통째로 다 지워버리기
+            em.clear();
+
+            Member member2 = em.find(Member.class, 150L);   // 앞서 em.clear를 한 것 때문에 영속성 컨텍스트에 없어서 SELECT 쿼리가 한번 더 나감.
 
             System.out.println("=================================");
             tx.commit();
