@@ -21,22 +21,31 @@ public class JpaMain {
 
             Member member1 = new Member();
             member1.setUsername("A");
-
             Member member2 = new Member();
             member2.setUsername("B");
-
             Member member3 = new Member();
             member3.setUsername("C");
+            Member member4 = new Member();
+            member4.setUsername("D");
+            Member member5 = new Member();
+            member5.setUsername("E");
+            Member member6 = new Member();
+            member6.setUsername("F");
 
             System.out.println("=======================");
-
             em.persist(member1);
             em.persist(member2);
             em.persist(member3);
+            em.persist(member4);
+            em.persist(member5);
+            em.persist(member6);
 
             System.out.println("member.id = " + member1.getId());
             System.out.println("member.id = " + member2.getId());
             System.out.println("member.id = " + member3.getId());
+            System.out.println("member.id = " + member4.getId());
+            System.out.println("member.id = " + member5.getId());
+            System.out.println("member.id = " + member6.getId());
             System.out.println("=======================");
 
             tx.commit();
