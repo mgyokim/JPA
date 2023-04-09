@@ -6,7 +6,8 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="JPA-Basic" />
+        <module name="ex1-hello-jpa" />
+        <module name="JPA-Basic-Code" />
       </profile>
     </annotationProcessing>
   </component>
