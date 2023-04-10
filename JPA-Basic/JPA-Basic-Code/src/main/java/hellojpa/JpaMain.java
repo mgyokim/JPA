@@ -18,29 +18,13 @@ public class JpaMain {
         tx.begin();
 
         try {
+            Member member = saveMember(em);
 
-            // 저장
             Team team = new Team();
-            team.setName("TeamA");
+            team.setName("teamA");
+            team.getMembers().add(member);
+
             em.persist(team);
-
-            Member member = new Member();
-            member.setUsername("member1");
-            member.changeTeam(team);   // *** Member는 연관관계 주인이므로 업데이트 된다.
-            em.persist(member);
-
-//            team.getMembers().add(member);  // *** 연관관계 편의 메서드로 만들어서 생략. Team의 members 는 @OneToMany(mappedBy = "team") 로 읽기 전용이다. 연관관계의 주인에 값을 입력한 것이 아니다. 따라서 업데이트 되지 않는다. 하지만, 순수 객체 상태를 고려하여 양방향 연관관계 매핑시, 항상 양쪽에 값을 설정하자.
-
-//            em.flush();
-//            em.clear();
-
-            Team findTeam = em.find(Team.class, team.getId());  // 1차 캐시
-            List<Member> members = findTeam.getMembers();
-
-            System.out.println("==========================================");
-            System.out.println("members = " + findTeam);    // 양방향 매핑 toString 무한 루프 예시
-             System.out.println("==========================================");
-
 
             tx.commit();
         } catch (Exception e) {
@@ -50,5 +34,13 @@ public class JpaMain {
         }
 
         emf.close();
+    }
+
+    private static Member saveMember(EntityManager em) {
+        Member member = new Member();
+        member.setUsername("member1");
+
+        em.persist(member);
+        return member;
     }
 }
