@@ -14,7 +14,7 @@ public class Team {
     private String name;
 
     @OneToMany(mappedBy = "team")
-    private List<Member> members = new ArrayList<>();   // ArrayList로 초기화 해두는 것은, add할 때 nullpoint가 안뜨도록 하는 관례.
+    private List<Member> members = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -32,20 +32,5 @@ public class Team {
         this.name = name;
     }
 
-    public List<Member> getMembers() {
-        return members;
-    }
 
-    public void setMembers(List<Member> members) {
-        this.members = members;
-    }
-
-    @Override
-    public String toString() {
-        return "Team{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", members=" + members +
-                '}';
-    }
 }
