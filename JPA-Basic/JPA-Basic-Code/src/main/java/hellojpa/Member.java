@@ -1,9 +1,11 @@
 package hellojpa;
 
 import javax.persistence.*;
+import javax.sound.sampled.FloatControl;
+import java.time.LocalDateTime;
 
 @Entity
-public class Member extends BaseEntity {
+public class Member {
     @Id
     @GeneratedValue
     @Column(name = "MEMBER_ID")
@@ -12,9 +14,25 @@ public class Member extends BaseEntity {
     @Column(name = "USERNAME")
     private String username;
 
-    @ManyToOne(fetch = FetchType.LAZY)  // Team을 프록시로 조회, Member 클래스만 Db에서 조회
-    @JoinColumn
-    private Team team;
+    // 기간 Period
+    @Embedded
+    private Period workPreiod;
+
+    // 주소
+    @Embedded
+    private Adress homeAddress;
+
+    // 주소
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name="city",
+                column = @Column(name = "WORK_CITY")),
+            @AttributeOverride(name="street",
+                    column = @Column(name = "WORK_STREET")),
+            @AttributeOverride(name="zipcode",
+                    column = @Column(name = "WORK_ZIPCODE"))
+    })
+    private Adress workAddress;
 
     public Long getId() {
         return id;
@@ -32,11 +50,19 @@ public class Member extends BaseEntity {
         this.username = username;
     }
 
-    public Team getTeam() {
-        return team;
+    public Period getWorkPreiod() {
+        return workPreiod;
     }
 
-    public void setTeam(Team team) {
-        this.team = team;
+    public void setWorkPreiod(Period workPreiod) {
+        this.workPreiod = workPreiod;
+    }
+
+    public Adress getHomeAddress() {
+        return homeAddress;
+    }
+
+    public void setHomeAddress(Adress homeAddress) {
+        this.homeAddress = homeAddress;
     }
 }
