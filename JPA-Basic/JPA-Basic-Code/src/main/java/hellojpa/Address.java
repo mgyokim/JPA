@@ -3,16 +3,16 @@ package hellojpa;
 import javax.persistence.Embeddable;
 
 @Embeddable
-public class Adress {
+public class Address {
     // 주소
     private String city;
     private String street;
     private String zipcode;
 
-    public Adress() {
+    public Address() {
     }
 
-    public Adress(String city, String street, String zipcode) {
+    public Address(String city, String street, String zipcode) {
         this.city = city;
         this.street = street;
         this.zipcode = zipcode;
@@ -22,7 +22,7 @@ public class Adress {
         return city;
     }
 
-    public void setCity(String city) {
+    private void setCity(String city) {
         this.city = city;
     }
 
@@ -30,7 +30,7 @@ public class Adress {
         return street;
     }
 
-    public void setStreet(String street) {
+    private void setStreet(String street) {
         this.street = street;
     }
 
@@ -38,7 +38,7 @@ public class Adress {
         return zipcode;
     }
 
-    public void setZipcode(String zipcode) {
+    private void setZipcode(String zipcode) {
         this.zipcode = zipcode;
     }
 }

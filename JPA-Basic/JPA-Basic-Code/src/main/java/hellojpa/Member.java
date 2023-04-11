@@ -1,8 +1,6 @@
 package hellojpa;
 
 import javax.persistence.*;
-import javax.sound.sampled.FloatControl;
-import java.time.LocalDateTime;
 
 @Entity
 public class Member {
@@ -20,19 +18,9 @@ public class Member {
 
     // 주소
     @Embedded
-    private Adress homeAddress;
+    private Address homeAddress;
 
-    // 주소
-    @Embedded
-    @AttributeOverrides({
-            @AttributeOverride(name="city",
-                column = @Column(name = "WORK_CITY")),
-            @AttributeOverride(name="street",
-                    column = @Column(name = "WORK_STREET")),
-            @AttributeOverride(name="zipcode",
-                    column = @Column(name = "WORK_ZIPCODE"))
-    })
-    private Adress workAddress;
+
 
     public Long getId() {
         return id;
@@ -58,11 +46,11 @@ public class Member {
         this.workPreiod = workPreiod;
     }
 
-    public Adress getHomeAddress() {
+    public Address getHomeAddress() {
         return homeAddress;
     }
 
-    public void setHomeAddress(Adress homeAddress) {
+    public void setHomeAddress(Address homeAddress) {
         this.homeAddress = homeAddress;
     }
 }
