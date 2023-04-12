@@ -4,6 +4,9 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import java.util.List;
 
 public class JpaMain {
@@ -18,41 +21,34 @@ public class JpaMain {
         tx.begin();
 
         try {
+            // JPQL 예시
+//            List<Member> result = em.createQuery("select m from Member as m where m.username like '%kim%'", Member.class)
+//                    .getResultList();
+//
+//            for (Member member : result) {
+//                System.out.println("member = " + member);
+//            }
 
-            Member member = new Member();
-            member.setUsername("member1");
-            member.setHomeAddress(new Address("homeCity", "street", "12314"));
+        // Criteria 예시 (자바 코드로 짜기 때문에 오타가 나더라도 컴파일 오류로 파악 가능하고, 동적 쿼리를 짜기 좋다는 장점이 있지만, SQL 스럽지 않다는 단점이 있다.) - 근데 조건이 좀 늘어나면 SQL스럽지 않아서 알아보기 힘들어서 유지보수가 힘듦. 그래서 실무에서는 이거 말고 QueryDSL 사용하자.
+            // 그냥 이런게 있다 정도로 알고가자.
+            // Criteria 사용 준비
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<Member> query = cb.createQuery(Member.class);
 
-            member.getFavoriteFoods().add("닭가슴살");
-            member.getFavoriteFoods().add("연어");
-            member.getFavoriteFoods().add("비타민");
+            Root<Member> m = query.from(Member.class);
 
-            member.getAddressHistory().add(new AddressEntity("old1", "street", "12314"));
-            member.getAddressHistory().add(new AddressEntity("old2", "street", "12314"));
+            CriteriaQuery<Member> cq = query.select(m).where(cb.equal(m.get("username"), "kim"));
+            em.createQuery(cq)
+                    .getResultList();
 
-            em.persist(member);
-
-            em.flush();
-            em.clear();
-
-            System.out.println("==============START================");
-            Member findMember = em.find(Member.class, member.getId()); // 쿼리를 확인해보면, member만 select한다. 즉, 값 타입 컬렉션은 지연로딩 이라는 의미.
-            System.out.println("===================================");
-
-            // homeCity -> newCity
-//            Address a = findMember.getHomeAddress();
-//            findMember.setHomeAddress(new Address("newCity", a.getStreet(), a.getZipcode()));
-
-
-            // 닭가슴살 -> 한식 (컬렉션 값 타입의 변경, 여기서 알 수 있는 것은, 컬렉션의 값만 변경해도 실제 데이터베이스에 쿼리가 나가면서 JPA가 알아서 바꿔준다.)
-//            findMember.getFavoriteFoods().remove("닭가슴살");
-//            findMember.getFavoriteFoods().add("한식");
-
-            // 주소변경
-//            findMember.getAddressHistory().remove(new Address("old1", "street", "12314")); // 기본적으로 컬렉션들은 대부분 이런 것을 찾을 때 equals를 사용한다. 그래서 equals나 hashCode가 제대로 구현되어 있지 않으면 문제가생긴다. 잘 만들어 놓자.(오버라이딩을 하든..)
-//            findMember.getAddressHistory().add(new Address("newCity1", "street", "10000"));
-
-
+            // QueryDSL은 설정 해야하지만 일단 코드만 비교용으로 작성했음
+//            QMember m = QMember.member;
+//            Lsit<Member> result = queryFactory
+//                    .select(m)
+//                    .from(m)
+//                    .where(m.name.like("kim"))
+//                    .fetch();
+            
             tx.commit();
         } catch (Exception e) {
             tx.rollback();
