@@ -48,7 +48,7 @@ public class JpaMain {
 //                    .from(m)
 //                    .where(m.name.like("kim"))
 //                    .fetch();
-            
+
             tx.commit();
         } catch (Exception e) {
             tx.rollback();
