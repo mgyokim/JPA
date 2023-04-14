@@ -28,6 +28,7 @@ public class JpaMain {
             Member member = new Member();
             member.setUsername("member");
             member.setAge(10);
+            member.setType(MemberType.ADMIN);
 
             member.setTeam(team);
 
@@ -36,30 +37,18 @@ public class JpaMain {
             em.flush();
             em.clear();
 
-            String query = "select m from Member m inner join m.team t"; //  내부 조인, inner 생략 가능
-            List<Member> result = em.createQuery(query, Member.class)
+            String query = "select m.username, 'HELLO', true From Member m where m.type = :userType";
+
+            List<Object[]> result = em.createQuery(query)
+                    .setParameter("userType", MemberType.ADMIN)
                     .getResultList();
 
-            String query2 = "select m from Member m left outer join m.team t";  // 외부 조인, outer 생략 가능
-            List<Member> resul2 = em.createQuery(query2, Member.class)
-                    .getResultList();
+            for (Object[] objects : result) {
+                System.out.println("objects[0] = " + objects[0]);
+                System.out.println("objects[1] = " + objects[1]);
+                System.out.println("objects[2] = " + objects[2]);
+            }
 
-            String query3 = "select m from Member m, Team t where m.username = t.name";  // 세타 조인
-            List<Member> resul3 = em.createQuery(query3, Member.class)
-                    .getResultList();
-
-
-            String query4 = "select m from Member m left join m.team t  on t.name = 'teanA'";  // join ON 절 이용한 조회 대상 필터링
-            List<Member> resul4 = em.createQuery(query4, Member.class)
-                    .getResultList();
-
-            String query5 = "select m from Member m join Team t on m.username = t.name";  // join ON 절 이용한 연관관계 없는 엔티티 내부 조인
-            List<Member> resul5 = em.createQuery(query5, Member.class)
-                    .getResultList();
-
-            String query6 = "select m from Member m left join Team t on m.username = t.name";  // join ON 절 이용한 연관관계 없는 엔티티 외부 조인
-            List<Member> resul6 = em.createQuery(query6, Member.class)
-                    .getResultList();
 
             tx.commit();
         } catch (Exception e) {
