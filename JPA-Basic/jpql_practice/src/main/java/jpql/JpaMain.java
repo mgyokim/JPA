@@ -17,28 +17,49 @@ public class JpaMain {
         EntityTransaction tx = em.getTransaction();
         tx.begin();
 
-        try {
-            for (int i = 0; i < 100; i++) {
 
-                Member member = new Member();
-                member.setUsername("member" + i);
-                member.setAge(i);
-                em.persist(member);
 
-            }
+        try{
+
+            Team team = new Team();
+            team.setName("teamA");
+            em.persist(team);
+
+            Member member = new Member();
+            member.setUsername("member");
+            member.setAge(10);
+
+            member.setTeam(team);
+
+            em.persist(member);
 
             em.flush();
             em.clear();
 
-            List<Member> result = em.createQuery("select m from Member m order by m.age desc", Member.class)
-                    .setFirstResult(1)
-                    .setMaxResults(10)
+            String query = "select m from Member m inner join m.team t"; //  내부 조인, inner 생략 가능
+            List<Member> result = em.createQuery(query, Member.class)
                     .getResultList();
 
-            System.out.println("result.size() = " + result.size());
-            for (Member member1 : result) {
-                System.out.println("member1 = " + member1);
-            }
+            String query2 = "select m from Member m left outer join m.team t";  // 외부 조인, outer 생략 가능
+            List<Member> resul2 = em.createQuery(query2, Member.class)
+                    .getResultList();
+
+            String query3 = "select m from Member m, Team t where m.username = t.name";  // 세타 조인
+            List<Member> resul3 = em.createQuery(query3, Member.class)
+                    .getResultList();
+
+
+            String query4 = "select m from Member m left join m.team t  on t.name = 'teanA'";  // join ON 절 이용한 조회 대상 필터링
+            List<Member> resul4 = em.createQuery(query4, Member.class)
+                    .getResultList();
+
+            String query5 = "select m from Member m join Team t on m.username = t.name";  // join ON 절 이용한 연관관계 없는 엔티티 내부 조인
+            List<Member> resul5 = em.createQuery(query5, Member.class)
+                    .getResultList();
+
+            String query6 = "select m from Member m left join Team t on m.username = t.name";  // join ON 절 이용한 연관관계 없는 엔티티 외부 조인
+            List<Member> resul6 = em.createQuery(query6, Member.class)
+                    .getResultList();
 
             tx.commit();
         } catch (Exception e) {
