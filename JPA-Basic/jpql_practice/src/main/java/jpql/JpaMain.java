@@ -24,31 +24,55 @@ public class JpaMain {
             member.setAge(10);
             em.persist(member);
 
-            TypedQuery<Member> query = em.createQuery("select m from Member m", Member.class); // 타입이하나일 때는 명시하면 타입쿼리로 반환
-            Query query1 = em.createQuery("select m.username, m.age from Member m");// m.username은 String인데, m.age는 int 즉 타입을 명기할 수 없다. 이때는 타입쿼리로 반환 불가능
-            TypedQuery<String> query2 = em.createQuery("select m.username from Member m", String.class);// m.username은 String 이므로 명시해주면 타입쿼리로 반환 가능
+            em.flush();
+            em.clear();
+// ----------- 엔티티 프로젝션
+             List<Member> result = em.createQuery("select m from Member m", Member.class)
+                    .getResultList();
+            Member findMember = result.get(0);
+            findMember.setAge(20);
 
-            TypedQuery<Member> query3 = em.createQuery("select m from Member m", Member.class); //
-            List<Member> resultList = query3.getResultList(); // getResultList()는 리스트 컬렉션이 반환된다. NullPointException 걱정 안해도된다.
+            // 묵시적 조인
+            List<Team> result2 = em.createQuery("select m.team from Member m", Team.class) // 이렇게 쓰지말고
+                    .getResultList();
+            // 명시적 조인
+            // 아래처럼 실제 sql과 최대한 비슷하게 작성해야함 왜냐하면, join의 경우 성능에 영향을 줄 수 있는 요소와 튜닝할 수 있는 요소가 많기 때문에 한눈에 보여야 한다.
+            List<Team> result3 = em.createQuery("select t from Member m join m.team t", Team.class)
+                    .getResultList();
 
-            // 만약에 쿼리의 반환값이 하나라면, where ~#~#~#
-            Member singleResult = query3.getSingleResult(); // 정확히 하나만! 반환하며, 결과가 없으면 NoResultException, 결과가 둘 이상이면 NonUniqueException 터짐 ->
-            // 만약에 Spring Data JPA를 쓰면, 요즘에는 null로 반환하거나 Optional로 반환한다.(내부적으로 try-catch)
+// ----------- 임베디드 타입 프로젝션 -> 임베디드 타입만으로는 안되고, 속한 엔티티로부터 시작 ex) o.address
+            em.createQuery("select o.address from Order o", Address.class)
+                    .getResultList();
 
-            // 파라미터 바인딩
-//            TypedQuery<Member> query4 = em.createQuery("select m from Member m where m.username= :username", Member.class);
-//            query4.setParameter("username", "member1");
-//            Member singleResult1 = query.getSingleResult();
-//            for (Member member1 : resultList) {
-//                System.out.println("singleResult1 = " + singleResult1.getUsername());
-//            };
-            // 보통은 이렇게 체인으로 엮어서 사용한다.
-            Member result = em.createQuery("select m from Member m where m.username= :username", Member.class) // 타입이하나일 때는 명시하면 타입쿼리로 반환
-                    .setParameter("username", "member1")
-                    .getSingleResult();
+// ----------- 스칼라 타입 프로젝션
+            em.createQuery("select distinct m.username, m.age from Member m")
+                    .getResultList();
 
-            System.out.println("result = " + result.getUsername());
+// 여러 값 프로젝션 조회 - 1. Query 타입으로 조회
+            List resultList = em.createQuery("select distinct m.username, m.age from Member m")
+                    .getResultList();
 
+            Object o = resultList.get(0);
+            Object[] result4 = (Object[]) o;
+            System.out.println("username = " + result4[0]);
+            System.out.println("age = " + result4[1]);
+
+
+            // 2. 제네릭에 Obejct 배열 지정
+            List<Object[]> resultList2 = em.createQuery("select distinct m.username, m.age from Member m")
+                    .getResultList();
+
+            Object[] result5 = resultList2.get(0);
+            System.out.println("username = " + result5[0]);
+            System.out.println("age = " + result5[1]);
+
+            // 3. new 명령어로 조회 -> 가장 깔끔함
+            List<MemberDTO> result6 = em.createQuery("select distinct new jpql.MemberDTO(m.username, m.age) from Member m", MemberDTO.class)
+                    .getResultList();
+
+            MemberDTO memberDTO = result6.get(0);
+            System.out.println("memberDTO.getUsername() = " + memberDTO.getUsername());
+            System.out.println("memberDTO.getAge() = " + memberDTO.getAge());
 
 
             tx.commit();
