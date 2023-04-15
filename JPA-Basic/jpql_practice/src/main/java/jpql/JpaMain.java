@@ -77,6 +77,7 @@ public class JpaMain {
 
             for (Member member : members) {
                 System.out.println("member = " + member);
+
             }
 
 
