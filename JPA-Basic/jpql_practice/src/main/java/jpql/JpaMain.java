@@ -49,21 +49,36 @@ public class JpaMain {
             em.flush();
             em.clear();
 
-            String query = "select t From Team t";
+            // 1. 엔티티 직접 사용 - 엔티티를 파라미터로 전달
+//            String query = "select m from Member m where m = :member";
+//
+//            Member findMember = em.createQuery(query, Member.class)
+//                    .setParameter("member", member1)
+//                    .getSingleResult();
+//
+//            System.out.println("findMember = " + findMember);
 
-            List<Team> result = em.createQuery(query, Team.class)
-                    .setFirstResult(0)
-                    .setMaxResults(2)
+
+            // 2. 엔티티 직접 사용 - 식별자를 직접 전달 (1과 결과 같음)
+//            String query = "select m from Member m where m.id = :memberId";
+//
+//            Member findMember = em.createQuery(query, Member.class)
+//                    .setParameter("memberId", member1.getId())
+//                    .getSingleResult();
+//
+//            System.out.println("findMember = " + findMember);
+
+            // 3. 엔티티 직접 사용 - 외래 키 값
+            String query = "select m from Member m where m.team = :team";
+
+            List<Member> members = em.createQuery(query, Member.class)
+                    .setParameter("team", teamA)
                     .getResultList();
 
-            System.out.println("result = " + result.size());
-
-            for (Team team : result) {
-                System.out.println("team.getName = " + team.getName() +"|members = " +  team.getMembers().size());
-                for (Member member : team.getMembers()) {
-                    System.out.println("-> member = " + member);
-                }
+            for (Member member : members) {
+                System.out.println("member = " + member);
             }
+
 
             tx.commit();
         } catch (Exception e) {
