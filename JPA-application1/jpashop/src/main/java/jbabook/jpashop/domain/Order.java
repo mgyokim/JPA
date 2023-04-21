@@ -1,6 +1,8 @@
 package jbabook.jpashop.domain;
 
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
@@ -14,6 +16,7 @@ import static javax.persistence.FetchType.LAZY;
 @Table(name = "orders")
 @Getter
 @Setter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)  // 다른 스타일의 생성을 막기위한 protected
 public class Order {
 
     @Id
@@ -70,7 +73,7 @@ public class Order {
     /**
      * 주문 취소
      */
-    public void canccle() {
+    public void cancle() {
         if (delivery.getStatus() == DeliveryStatus.COMP) {
             throw new IllegalStateException("이미 배송완료된 상품은 취소가 불가능합니다.");
         }
