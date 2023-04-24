@@ -8,6 +8,7 @@ import jbabook.jpashop.domain.item.Item;
 import jbabook.jpashop.repository.ItemRepository;
 import jbabook.jpashop.repository.MemberRepository;
 import jbabook.jpashop.repository.OrderRepository;
+import jbabook.jpashop.repository.OrderSearch;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -64,7 +65,7 @@ public class OrderService {
     /**
      * 검색
      */
-//    public List<Order> findOrders(OrderSearch orderSearch) {
-//        return orderRepository.findAll(orderSearch);
-//    }
+    public List<Order> findOrders(OrderSearch orderSearch) {
+        return orderRepository.findAllByCriteria(orderSearch);
+    }
 }
