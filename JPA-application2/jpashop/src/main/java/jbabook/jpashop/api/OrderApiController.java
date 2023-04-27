@@ -1,14 +1,19 @@
 package jbabook.jpashop.api;
 
+import jbabook.jpashop.domain.Address;
 import jbabook.jpashop.domain.Order;
 import jbabook.jpashop.domain.OrderItem;
+import jbabook.jpashop.domain.OrderStatus;
 import jbabook.jpashop.repository.OrderRepository;
 import jbabook.jpashop.repository.OrderSearch;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * V1. 엔티티 직접 노출
@@ -25,7 +30,6 @@ import java.util.List;
  * - 페이징 가능
  * V6. JPA에서 DTO로 바로 조회, 플랫 데이터(1Query) (1 Query)
  * - 페이징 불가능...
- *
  */
 
 @RestController
@@ -49,4 +53,50 @@ public class OrderApiController {
         }
         return all;
     }
+
+    @GetMapping("/api/v2/orders")
+    public List<OrderDto> ordersV2() {
+        List<Order> orders = orderRepository.findAllByString(new OrderSearch());
+        List<OrderDto> result = orders.stream()
+                .map(o -> new OrderDto(o))
+                .collect(Collectors.toList());
+        return result;
+    }
+
+    @Getter
+    static class OrderDto {
+
+        private Long orderId;
+        private String name;
+        private LocalDateTime orderDate;
+        private OrderStatus orderStatus;
+        private Address address;
+        private List<OrderItemDto> orderItems;
+
+        public OrderDto(Order order) {
+            orderId = order.getId();
+            name = order.getMember().getName();
+            orderDate = order.getOrderDate();
+            orderStatus = order.getStatus();
+            address = order.getDelivery().getAddress();
+            orderItems = order.getOrderItems().stream()
+                    .map(orderItem -> new OrderItemDto(orderItem))
+                    .collect(Collectors.toList());
+        }
+    }
+
+    @Getter
+    static class OrderItemDto {
+
+        private String itemName; // 상품명
+        private int orderPrice; // 주문가격
+        private int count; // 주문 수량
+
+        public OrderItemDto(OrderItem orderItem) {
+            itemName = orderItem.getItem().getName();
+            orderPrice = orderItem.getOrderPrice();
+            count = orderItem.getCount();
+        }
+    }
+
 }
