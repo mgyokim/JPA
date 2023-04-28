@@ -1,6 +1,11 @@
 package jbabook.jpashop.repository;
 
+import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import jbabook.jpashop.domain.Order;
+import jbabook.jpashop.domain.OrderStatus;
+import jbabook.jpashop.domain.QMember;
+import jbabook.jpashop.domain.QOrder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
@@ -114,6 +119,35 @@ public class OrderRepository {
 //                .setFirstResult(1)
 //                .setMaxResults(100) // 컬렉션 페치 조인 사용하면 페이징 불가. 하이버네이트는 경고 로그 남기면서 모든 데이터를 DB에서 읽어오고, 메모리에서 페이징해버림(매우 위험)
                 .getResultList();
+    }
+
+    public List<Order> findALl(OrderSearch orderSearch) {
+
+        JPAQueryFactory query = new JPAQueryFactory(em);
+        QOrder order = QOrder.order;
+        QMember member = QMember.member;
+
+        return query
+                .select(order)
+                .from(order)
+                .join(order.member, member)
+                .where(statusEq(orderSearch.getOrderStatus()), nameLike(orderSearch.getMemberName()))
+                .limit(1000)
+                .fetch();
+    }
+
+    private BooleanExpression nameLike(String memberName) {
+        if (!StringUtils.hasText(memberName)) {
+            return null;
+        }
+        return QMember.member.name.like(memberName);
+    }
+
+    private BooleanExpression statusEq(OrderStatus statusCond) {
+        if (statusCond == null) {
+            return null;
+        }
+        return QOrder.order.status.eq(statusCond);
     }
 
     public List<Order> findAllWithMemberDelivery(int offset, int limit) {
